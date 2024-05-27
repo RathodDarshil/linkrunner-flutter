@@ -1,8 +1,8 @@
-import 'dart:developer' as developer;
 import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
+import 'dart:developer' as developer;
+
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:http/http.dart' as http;
 
 const packageName = "linkrunner";
 
@@ -29,22 +29,29 @@ class LRUserData {
 }
 
 class LinkRunner {
-  static const String baseUrl = 'https://api.linkrunner.io';
-  static const String encryptedStorageTokenKeyName = 'linkrunner-token';
-  static const String packageVersion = '0.4.2';
+  static final LinkRunner _singleton = LinkRunner._internal();
 
-  static const FlutterSecureStorage secureStorage = FlutterSecureStorage();
+  final String _baseUrl = 'https://api.linkrunner.io';
+  final String encryptedStorageTokenKeyName = 'linkrunner-token';
+  final String packageVersion = '0.5.2';
+
   static final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  String? token;
 
-  static Future<Map<String, dynamic>> getDeviceData() async {
+  factory LinkRunner.getInstance() {
+    return _singleton;
+  }
+
+  LinkRunner._internal();
+
+  Future<Map<String, dynamic>> _getDeviceData() async {
     var deviceData = <String, dynamic>{};
 
     try {
       var deviceInfoData = await deviceInfo.deviceInfo;
-      deviceData = deviceInfoData.toMap();
+      deviceData = deviceInfoData.data;
+      developer.log(deviceData.toString(), name: packageName);
       deviceData['package_version'] = packageVersion;
-      deviceData['version'] =
-          deviceData['version']; // Assuming version is fetched here
     } catch (e) {
       developer.log('Failed to get device info', error: e, name: packageName);
     }
@@ -52,7 +59,7 @@ class LinkRunner {
     return deviceData;
   }
 
-  static Future<void> init(String token) async {
+  Future<void> init(String token) async {
     if (token.isEmpty) {
       developer.log(
         'Linkrunner needs your project token to initialize!',
@@ -61,9 +68,11 @@ class LinkRunner {
       return;
     }
 
+    this.token = token;
+
     try {
       var response = await http.post(
-        Uri.parse('$baseUrl/api/client/init'),
+        Uri.parse('$_baseUrl/api/client/init'),
         headers: <String, String>{
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -71,16 +80,17 @@ class LinkRunner {
         body: jsonEncode({
           'token': token,
           'package_version': packageVersion,
-          'app_version': (await getDeviceData())['version'],
-          'device_data': await getDeviceData(),
+          'app_version': (await _getDeviceData())['version'],
+          'device_data': await _getDeviceData(),
+          'platform': 'FLUTTER',
         }),
       );
 
       var result = jsonDecode(response.body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        await secureStorage.write(
-            key: encryptedStorageTokenKeyName, value: token);
+        // await secureStorage.write(
+        //     key: encryptedStorageTokenKeyName, value: token);
         developer.log('Linkrunner initialised successfully 🔥',
             name: packageName);
       } else {
@@ -92,12 +102,10 @@ class LinkRunner {
     }
   }
 
-  static Future<void> trigger({
+  Future<void> trigger({
     required LRUserData userData,
     Map<String, dynamic>? data,
   }) async {
-    String? token = await secureStorage.read(key: encryptedStorageTokenKeyName);
-
     if (token == null) {
       developer.log(
         'Token not found',
@@ -112,13 +120,13 @@ class LinkRunner {
       'user_data': userData.toJSON(),
       'data': {
         ...?data,
-        'device_data': await getDeviceData(),
+        'device_data': await _getDeviceData(),
       },
     });
 
     try {
       var response = await http.post(
-        Uri.parse('$baseUrl/api/client/trigger'),
+        Uri.parse('$_baseUrl/api/client/trigger'),
         headers: <String, String>{
           'Accept': 'application/json',
           'Content-Type': 'application/json',
