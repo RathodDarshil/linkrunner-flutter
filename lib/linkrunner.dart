@@ -92,7 +92,7 @@ class LinkRunner {
     }
   }
 
-  Future<Map<String, dynamic>?> trigger({
+  Future<TriggerResponse?> trigger({
     required LRUserData userData,
     Map<String, dynamic>? data,
     TriggerConfig? config,
@@ -138,7 +138,7 @@ class LinkRunner {
       }
 
       if (result['data'] != null) {
-        final data = TriggerResponse.fromJSON(result?['data']);
+        final data = TriggerResponse.fromJSON(result['data']);
 
         bool shouldTrigger = data.deeplink != null &&
             config?.triggerDeeplink != false &&
@@ -146,11 +146,11 @@ class LinkRunner {
 
         if (shouldTrigger) {
           developer.log(
-            'Linkrunner: Triggering deeplink > ${result?.data?.deeplink}',
+            'Linkrunner: Triggering deeplink > ${data?.deeplink}',
             name: packageName,
           );
 
-          Uri deeplinkUrl = Uri.parse(result?.data?.trigger ?? "");
+          Uri deeplinkUrl = Uri.parse(data?.deeplink ?? "");
           launchUrl(deeplinkUrl).then((launched) {
             if (launched) {
               Uri deeplinkTriggeredUri =
@@ -176,10 +176,10 @@ class LinkRunner {
 
         developer.log(
           'Linkrunner: Trigger called 🔥',
-          name: packageName,
+          name: packageName
         );
 
-        return result?['data'];
+        return data;
       }
 
       return null;
