@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
 import 'constants.dart';
 import 'models/api.dart';
+import 'models/device_data.dart';
 import 'models/lr_user_data.dart';
 
 class LinkRunner {
@@ -16,7 +16,6 @@ class LinkRunner {
   final String encryptedStorageTokenKeyName = 'linkrunner-token';
   final String packageVersion = '0.5.2';
 
-  static final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   String? token;
 
   LinkRunner._internal();
@@ -24,12 +23,10 @@ class LinkRunner {
   factory LinkRunner() => _singleton;
 
   Future<Map<String, dynamic>> _getDeviceData() async {
-    var deviceData = <String, dynamic>{};
+    Map<String, dynamic> deviceData = {};
 
     try {
-      var deviceInfoData = await deviceInfo.deviceInfo;
-      deviceData = deviceInfoData.data;
-      // developer.log(deviceData.toString(), name: packageName);
+      deviceData = await getDeviceData();
       deviceData['package_version'] = packageVersion;
     } catch (e) {
       developer.log('Failed to get device info', error: e, name: packageName);
@@ -52,11 +49,14 @@ class LinkRunner {
     try {
       Uri initURL = Uri.parse('$_baseUrl/api/client/init');
 
+      final deviceData = await _getDeviceData();
+      print(deviceData.toString());
+
       dynamic body = {
         'token': token,
         'package_version': packageVersion,
-        'app_version': (await _getDeviceData())['version'],
-        'device_data': await _getDeviceData(),
+        'app_version': (deviceData)['version'],
+        'device_data': deviceData,
         'platform': 'FLUTTER',
       };
 
