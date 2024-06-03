@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:carrier_info/carrier_info.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:install_referrer/install_referrer.dart';
@@ -13,9 +12,6 @@ Future<Map<String, dynamic>> getDeviceData() async {
   final List<ConnectivityResult> connectivityResult =
       await Connectivity().checkConnectivity();
   final AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
-  final AndroidCarrierData? androidCarrierData =
-      await CarrierInfo.getAndroidInfo();
-  final IosCarrierData iosCarrierData = await CarrierInfo.getIosInfo();
 
   String? userAgent;
   if (Platform.isAndroid) {
@@ -47,15 +43,10 @@ Future<Map<String, dynamic>> getDeviceData() async {
     'connectivity': (connectivityResult.contains(ConnectivityResult.mobile))
         ? 'Mobile Network'
         : 'Wi-Fi',
-    'carrier': androidCarrierData?.telephonyInfo?.map((e) => e?.carrierName) ??
-        iosCarrierData?.carrierData?.map((e) => e?.carrierName) ??
-        [],
     'device': androidInfo.device,
     'device_id': androidInfo.id,
     'device_type': androidInfo.type,
     'device_name': androidInfo.model,
-    'device_token': '', // Device token needs to be implemented separately
-    'device_ip': '', // Device IP needs to be implemented separately
     'install_ref': installReferrer.toString(),
     'manufacturer': androidInfo.manufacturer,
     'user_agent': userAgent,
