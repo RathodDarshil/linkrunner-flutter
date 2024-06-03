@@ -1,39 +1,130 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# linkrunner
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
+Flutter Package for [linkrunner.io](https://www.linkrunner.io)
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
+## Installation
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+### Step 1: Installing flutter_linkrunner
 
-## Features
+#### Installing through cmdline
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+run the following:
 
-## Getting started
+```sh
+flutter pub add linkrunner
+```
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+#### OR
+
+#### Manually adding dependencies
+
+Add `linkrunner` to your `pubspec.yaml` under dependencies:
+
+```yaml
+dependencies:
+    linkrunner: ^0.5.3
+```
+
+Then run:
+
+```sh
+flutter pub get
+```
+
+to install your new dependency.
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+### Initialisation
+
+You will need your [project token](https://www.linkrunner.io/dashboard?m=documentation) to initialise the package.
+
+Place it along side your initialization code, such as in the `main` function:
 
 ```dart
-const like = 'sample';
+import 'package:linkrunner/main.dart';
+
+// Initialize the package
+final linkrunner = LinkRunner();
+
+void main() async {
+    // Call the .ensureInitialized method before calling the .init method
+    WidgetsFlutterBinding.ensureInitialized();
+
+    final init = await lr.init("YOUR_PROJECT_TOKEN");
+    runApp(MyApp());
+}
 ```
 
-## Additional information
+#### Response type for `linkrunner.init`
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+```
+{
+  ip_location_data: {
+    ip: string;
+    city: string;
+    countryLong: string;
+    countryShort: string;
+    latitude: number;
+    longitude: number;
+    region: string;
+    timeZone: string;
+    zipCode: string;
+  };
+  deeplink: string;
+  root_domain: boolean;
+}
+```
+
+### Trigger
+
+Call this function once your onboarding is completed and the main stack is loaded
+
+```dart
+import 'package:linkrunner/main.dart';
+
+void trigger() async {
+    final trigger = await linkrunner.trigger(
+        userData: LRUserData(
+        id: '1',
+        name: 'John Doe', // optional
+        phone: '9583849238', // optional
+        email: 'support@linkrunner.io', //optional
+        ),
+        data: {}, // Any other data you might need
+    );
+  }
+```
+
+You can pass any additional user related data in the `data` attribute
+
+#### Response type for `linkrunner.trigger`
+
+```
+{
+  ip_location_data: {
+    ip: string;
+    city: string;
+    countryLong: string;
+    countryShort: string;
+    latitude: number;
+    longitude: number;
+    region: string;
+    timeZone: string;
+    zipCode: string;
+  };
+  deeplink: string;
+  root_domain: boolean;
+  trigger: boolean; // Deeplink won't be triggered if false
+}
+```
+
+Note: Value of `trigger` will be only true for the first time the function is triggered by the user in order to prevent unnecessary redirects
+
+### Facing issues during integration?
+
+Email us at support@linkrunner.io
+
+## License
+
+MIT
