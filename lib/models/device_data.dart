@@ -29,7 +29,9 @@ Future<Map<String, dynamic>> getDeviceData() async {
   try {
     final referrerDetails = await InstallReferrer.referrer;
     installReferrer = referrerDetails.toString();
-  } catch (e) {}
+  } catch (e) {
+    // No catch required
+  }
 
   final deviceData = {
     'android_id': androidInfo.id,

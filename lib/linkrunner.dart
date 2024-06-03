@@ -50,7 +50,6 @@ class LinkRunner {
       Uri initURL = Uri.parse('$_baseUrl/api/client/init');
 
       final deviceData = await _getDeviceData();
-      print(deviceData.toString());
 
       dynamic body = {
         'token': token,
@@ -146,11 +145,11 @@ class LinkRunner {
 
         if (shouldTrigger) {
           developer.log(
-            'Linkrunner: Triggering deeplink > ${data?.deeplink}',
+            'Linkrunner: Triggering deeplink > ${data.deeplink}',
             name: packageName,
           );
 
-          Uri deeplinkUrl = Uri.parse(data?.deeplink ?? "");
+          Uri deeplinkUrl = Uri.parse(data.deeplink ?? "");
           launchUrl(deeplinkUrl).then((launched) {
             if (launched) {
               Uri deeplinkTriggeredUri =
@@ -174,10 +173,7 @@ class LinkRunner {
           });
         }
 
-        developer.log(
-          'Linkrunner: Trigger called 🔥',
-          name: packageName
-        );
+        developer.log('Linkrunner: Trigger called 🔥', name: packageName);
 
         return data;
       }
