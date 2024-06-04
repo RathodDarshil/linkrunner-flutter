@@ -1,43 +1,42 @@
 name: linkrunner
-description: "Flutter Package for linkrunner"
+description: "Flutter Package for linkrunner, track every click, download and dropoff for your app links"
 version: 0.5.2
 homepage: "https://www.linkrunner.io/"
 repository: "https://github.com/RathodDarshil/linkrunner_flutter"
 documentation: "https://github.com/RathodDarshil/linkrunner_flutter#getting-started"
 topics:
-  - linkrunner
-  - "app attribution"
-  - "app link tracking"
-  - "app tracking"
-  - tracking
+    - linkrunner
+    - app-attribution
+    - app-link-tracking
+    - app-tracking
+    - tracking
 
 environment:
-  sdk: '>=3.3.3 <4.0.0'
-  flutter: ">=1.17.0"
+    sdk: ">=3.3.3 <4.0.0"
+    flutter: ">=1.17.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
-  device_info_plus: ^10.1.0
-  http: ^1.2.1
-  url_launcher: ^6.2.6
-  package_info_plus: ^8.0.0
-  connectivity_plus: ^6.0.3
-  system_info2: ^4.0.0
-  install_referrer: ^1.2.1
-  carrier_info: ^2.0.8
+    flutter:
+        sdk: flutter
+    device_info_plus: ^10.1.0
+    http: ^1.2.1
+    url_launcher: ^6.2.6
+    package_info_plus: ^8.0.0
+    connectivity_plus: ^6.0.3
+    system_info2: ^4.0.0
+    install_referrer: ^1.2.1
+    carrier_info: ^2.0.8
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^4.0.0
+    flutter_test:
+        sdk: flutter
+    flutter_lints: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-
 # To add assets to your package, add an assets section, like this:
 # assets:
 #   - images/a_dot_burr.jpeg

@@ -13,7 +13,6 @@ class LinkRunner {
   static final LinkRunner _singleton = LinkRunner._internal();
 
   final String _baseUrl = 'https://api.linkrunner.io';
-  final String encryptedStorageTokenKeyName = 'linkrunner-token';
   final String packageVersion = '0.5.2';
 
   String? token;
@@ -141,7 +140,7 @@ class LinkRunner {
 
         bool shouldTrigger = data.deeplink != null &&
             config?.triggerDeeplink != false &&
-            data.trigger != null;
+            data.trigger != false;
 
         if (shouldTrigger) {
           developer.log(
@@ -150,27 +149,35 @@ class LinkRunner {
           );
 
           Uri deeplinkUrl = Uri.parse(data.deeplink ?? "");
-          launchUrl(deeplinkUrl).then((launched) {
-            if (launched) {
-              Uri deeplinkTriggeredUri =
-                  Uri.parse('$_baseUrl/api/client/deeplink-triggered');
 
-              dynamic body = {
-                'token': token,
-              };
+          try {
+            await launchUrl(deeplinkUrl);
 
-              http
-                  .post(deeplinkTriggeredUri, headers: jsonHeaders, body: body)
-                  .then(
-                (res) {
-                  developer.log(
-                    'Linkrunner: Deeplink triggered successfully',
-                    name: packageName,
-                  );
-                },
-              ).catchError((error, stackTrace) {});
+            Uri deeplinkTriggeredUri =
+                Uri.parse('$_baseUrl/api/client/deeplink-triggered');
+
+            final body = jsonEncode({
+              'token': token,
+            });
+
+            try {
+              await http.post(deeplinkTriggeredUri,
+                  headers: jsonHeaders, body: body);
+
+              developer.log(
+                'Linkrunner: Deeplink triggered successfully',
+                name: packageName,
+              );
+            } catch (e) {
+              developer.log(
+                'Linkrunner: Deeplink triggered failed',
+                error: e,
+                name: packageName,
+              );
             }
-          });
+          } catch (e) {
+            // Nothing
+          }
         }
 
         developer.log('Linkrunner: Trigger called 🔥', name: packageName);

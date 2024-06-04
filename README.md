@@ -4,7 +4,7 @@ Flutter Package for [linkrunner.io](https://www.linkrunner.io)
 
 ## Installation
 
-### Step 1: Installing flutter_linkrunner
+### Step 1: Installing linkrunner
 
 #### Installing through cmdline
 
@@ -39,7 +39,7 @@ to install your new dependency.
 
 You will need your [project token](https://www.linkrunner.io/dashboard?m=documentation) to initialise the package.
 
-Place it along side your initialization code, such as in the `main` function:
+Place it in the `main` function:
 
 ```dart
 import 'package:linkrunner/main.dart';
