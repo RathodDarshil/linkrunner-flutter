@@ -22,7 +22,7 @@ Add `linkrunner` to your `pubspec.yaml` under dependencies:
 
 ```yaml
 dependencies:
-    linkrunner: ^0.5.3
+    linkrunner: ^0.5.4
 ```
 
 Then run:
