@@ -25,7 +25,6 @@ dependencies:
     connectivity_plus: ^6.0.3
     system_info2: ^4.0.0
     install_referrer: ^1.2.1
-    carrier_info: ^2.0.8
 
 dev_dependencies:
     flutter_test:
