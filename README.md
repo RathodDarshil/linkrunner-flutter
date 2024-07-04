@@ -22,7 +22,7 @@ Add `linkrunner` to your `pubspec.yaml` under dependencies:
 
 ```yaml
 dependencies:
-    linkrunner: ^0.5.4
+    linkrunner: ^0.5.5
 ```
 
 Then run:
@@ -92,9 +92,14 @@ void trigger() async {
         email: 'support@linkrunner.io', //optional
         ),
         data: {}, // Any other data you might need
+        config: TriggerConfig(
+            triggerDeeplink: true // true by default
+        )
     );
   }
 ```
+
+By setting config > triggerDeeplink as `true` the deeplink won't be trigged (Only set to false if you are handling the redirection by yourself)
 
 You can pass any additional user related data in the `data` attribute
 
