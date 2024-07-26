@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
+import 'package:app_links/app_links.dart';
 import 'package:http/http.dart' as http;
+import 'package:linkrunner/models/lr_capture_payment.dart';
+import 'package:linkrunner/models/lr_remove_payment.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'constants.dart';
 import 'models/api.dart';
+
 import 'models/device_data.dart';
 import 'models/lr_user_data.dart';
 
@@ -13,7 +17,7 @@ class LinkRunner {
   static final LinkRunner _singleton = LinkRunner._internal();
 
   final String _baseUrl = 'https://api.linkrunner.io';
-  final String packageVersion = '0.5.5';
+  final String packageVersion = '0.6.0';
 
   String? token;
 
@@ -26,7 +30,7 @@ class LinkRunner {
 
     try {
       deviceData = await getDeviceData();
-      deviceData['package_version'] = packageVersion;
+      deviceData['version'] = packageVersion;
     } catch (e) {
       developer.log('Failed to get device info', error: e, name: packageName);
     }
@@ -34,17 +38,7 @@ class LinkRunner {
     return deviceData;
   }
 
-  Future<InitResponse?> init(String token) async {
-    if (token.isEmpty) {
-      developer.log(
-        'Linkrunner needs your project token to initialize!',
-        name: packageName,
-      );
-      return null;
-    }
-
-    this.token = token;
-
+  Future<InitResponse?> _initApiCall(String? link) async {
     try {
       Uri initURL = Uri.parse('$_baseUrl/api/client/init');
 
@@ -53,9 +47,9 @@ class LinkRunner {
       dynamic body = {
         'token': token,
         'package_version': packageVersion,
-        'app_version': (deviceData)['version'],
         'device_data': deviceData,
         'platform': 'FLUTTER',
+        'link': link
       };
 
       var response = await http.post(
@@ -90,6 +84,28 @@ class LinkRunner {
     }
   }
 
+  Future<InitResponse?> init(String token) async {
+    if (token.isEmpty) {
+      developer.log(
+        'Linkrunner needs your project token to initialize!',
+        name: packageName,
+      );
+      return null;
+    }
+
+    final appLinks = AppLinks(); // AppLinks is singleton
+
+    this.token = token;
+
+    appLinks.uriLinkStream.listen((uri) {
+      if (uri.queryParameters.containsKey('c')) {
+        _initApiCall(uri.toString());
+      }
+    });
+
+    return await _initApiCall(null);
+  }
+
   Future<TriggerResponse?> trigger({
     required LRUserData userData,
     Map<String, dynamic>? data,
@@ -111,8 +127,8 @@ class LinkRunner {
       'user_data': userData.toJSON(),
       'platform': 'FLUTTER',
       'data': {
-        ...?data,
         'device_data': await _getDeviceData(),
+        ...?data,
       },
     });
 
@@ -158,6 +174,7 @@ class LinkRunner {
 
             final body = jsonEncode({
               'token': token,
+              'device_data': await _getDeviceData(),
             });
 
             try {
@@ -194,6 +211,110 @@ class LinkRunner {
       );
 
       return null;
+    }
+  }
+
+  Future<void> capturePayment({
+    required LRCapturePayment capturePayment,
+  }) async {
+    if (token == null) {
+      developer.log(
+        'Trigger failed',
+        name: packageName,
+        error: Exception("Linkrunner token not initialized"),
+      );
+
+      return;
+    }
+
+    try {
+      Uri capturePaymentUrl = Uri.parse('$_baseUrl/api/client/capture-payment');
+
+      final body = jsonEncode({
+        'token': token,
+        'platform': 'FLUTTER',
+        'data': {
+          'device_data': await _getDeviceData(),
+        },
+        'payment_id': capturePayment.paymentId,
+        'user_id': capturePayment.userId,
+        'amount': capturePayment.amount
+      });
+
+      var response =
+          await http.post(capturePaymentUrl, headers: jsonHeaders, body: body);
+
+      var result = jsonDecode(response.body);
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception(result['msg']);
+      }
+
+      developer.log(
+        'Linkrunner: Payment captured successfully 💸',
+        name: packageName,
+      );
+
+      return;
+    } catch (e) {
+      developer.log(
+        'Error capturing payment',
+        error: e,
+        name: packageName,
+      );
+
+      return;
+    }
+  }
+
+  Future<void> removePayment({
+    required LRRemovePayment removePayment,
+  }) async {
+    if (token == null) {
+      developer.log(
+        'Trigger failed',
+        name: packageName,
+        error: Exception("Linkrunner token not initialized"),
+      );
+
+      return;
+    }
+
+    try {
+      Uri capturePaymentUrl =
+          Uri.parse('$_baseUrl/api/client/remove-captured-payment');
+
+      final body = jsonEncode({
+        'token': token,
+        'platform': 'FLUTTER',
+        'data': {
+          'device_data': await _getDeviceData(),
+        },
+        'payment_id': removePayment.paymentId,
+        'user_id': removePayment.userId,
+      });
+
+      var response =
+          await http.post(capturePaymentUrl, headers: jsonHeaders, body: body);
+
+      var result = jsonDecode(response.body);
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception(result['msg']);
+      }
+
+      developer.log(
+        'Linkrunner: Payment entry removed successfully!',
+        name: packageName,
+      );
+
+      return;
+    } catch (e) {
+      developer.log(
+        'Error removing payment entry',
+        error: e,
+        name: packageName,
+      );
+
+      return;
     }
   }
 }

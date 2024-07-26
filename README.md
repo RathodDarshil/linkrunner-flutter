@@ -22,7 +22,7 @@ Add `linkrunner` to your `pubspec.yaml` under dependencies:
 
 ```yaml
 dependencies:
-    linkrunner: ^0.5.5
+    linkrunner: ^0.6.0
 ```
 
 Then run:
@@ -86,11 +86,11 @@ import 'package:linkrunner/main.dart';
 void trigger() async {
     final trigger = await linkrunner.trigger(
         userData: LRUserData(
-        id: '1',
-        name: 'John Doe', // optional
-        phone: '9583849238', // optional
-        email: 'support@linkrunner.io', //optional
-        ),
+                id: '1',
+                name: 'John Doe', // optional
+                phone: '9583849238', // optional
+                email: 'support@linkrunner.io', //optional
+            ),
         data: {}, // Any other data you might need
         config: TriggerConfig(
             triggerDeeplink: true // true by default
@@ -125,6 +125,45 @@ You can pass any additional user related data in the `data` attribute
 ```
 
 Note: Value of `trigger` will be only true for the first time the function is triggered by the user in order to prevent unnecessary redirects
+
+### Capture revenue
+
+Call this function after a payment is confirmed
+
+```dart
+import 'package:linkrunner/models/lr_capture_payment.dart';
+
+void capturePayment() async {
+    await linkrunner.capturePayment(
+        capturePayment: LRCapturePayment(
+            userId: '666',
+            amount: 24168, // Send amount in one currency only
+            paymentId: 'AJKHAS' // optional but recommended
+        ),
+    );
+  }
+```
+
+NOTE: If you accept payments in multiple currencies convert them to one currency before calling the above function
+
+### Remove captured payment revenue
+
+Call this function after a payment is cancelled or refunded
+
+```dart
+import 'package:linkrunner/models/lr_remove_payment.dart';
+
+void removeCapturedPayment() async {
+    await linkrunner.removePayment(
+        removePayment: LRRemovePayment(
+            userId: '666',
+            paymentId: 'AJKHAS' // Ethier paymentId or userId is required!
+        ),
+    );
+  }
+```
+
+NOTE: `userId` or `paymentId` is required in order to remove a payment entry, if you use userId all the payments attributed to that user will be removed
 
 ### Facing issues during integration?
 
