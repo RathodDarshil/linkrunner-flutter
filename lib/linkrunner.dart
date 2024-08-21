@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:linkrunner/models/lr_capture_payment.dart';
 import 'package:linkrunner/models/lr_remove_payment.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:google_ads_deferred_deep_link/google_ads_deferred_deep_link.dart';
 
 import 'constants.dart';
 import 'models/api.dart';
@@ -17,7 +18,7 @@ class LinkRunner {
   static final LinkRunner _singleton = LinkRunner._internal();
 
   final String _baseUrl = 'https://api.linkrunner.io';
-  final String packageVersion = '0.6.0';
+  final String packageVersion = '0.7.0';
 
   String? token;
 
@@ -38,7 +39,7 @@ class LinkRunner {
     return deviceData;
   }
 
-  Future<InitResponse?> _initApiCall(String? link) async {
+  Future<InitResponse?> _initApiCall(String? link, String? source) async {
     try {
       Uri initURL = Uri.parse('$_baseUrl/api/client/init');
 
@@ -49,7 +50,8 @@ class LinkRunner {
         'package_version': packageVersion,
         'device_data': deviceData,
         'platform': 'FLUTTER',
-        'link': link
+        'link': link,
+        'source': source
       };
 
       var response = await http.post(
@@ -99,11 +101,27 @@ class LinkRunner {
 
     appLinks.uriLinkStream.listen((uri) {
       if (uri.queryParameters.containsKey('c')) {
-        _initApiCall(uri.toString());
+        _initApiCall(uri.toString(), "GENERAL");
       }
     });
 
-    return await _initApiCall(null);
+    try {
+      GoogleAdsDeferredDeepLink gaddl = GoogleAdsDeferredDeepLink();
+
+      gaddl.deferredDeepLinkStream.listen(
+        (GoogleAdsDeferredDeepLinkResult? event) {
+          if (event?.deepLink != null) {
+            _initApiCall(event?.deepLink, "GOOGLE_ADS");
+          }
+        },
+      );
+
+      gaddl.startFetch();
+    } catch (e) {
+      // catch
+    }
+
+    return await _initApiCall(null, null);
   }
 
   Future<TriggerResponse?> trigger({
