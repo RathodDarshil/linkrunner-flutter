@@ -22,7 +22,7 @@ Add `linkrunner` to your `pubspec.yaml` under dependencies:
 
 ```yaml
 dependencies:
-    linkrunner: ^0.7.0
+    linkrunner: ^0.7.1
 ```
 
 Then run:
@@ -32,6 +32,17 @@ flutter pub get
 ```
 
 to install your new dependency.
+
+### Step 2: Android updates
+
+Add the following in `app/build.gradle` file
+
+```
+dependencies {
+    ...
+    implementation("com.android.installreferrer:installreferrer:2.2")
+}
+```
 
 ## Usage
 
