@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 
 import 'package:app_links/app_links.dart';
 import 'package:http/http.dart' as http;
+import 'package:linkrunner/helpers.dart';
 import 'package:linkrunner/models/lr_capture_payment.dart';
 import 'package:linkrunner/models/lr_remove_payment.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -18,7 +19,7 @@ class LinkRunner {
   static final LinkRunner _singleton = LinkRunner._internal();
 
   final String _baseUrl = 'https://api.linkrunner.io';
-  final String packageVersion = '0.7.2';
+  final String packageVersion = '0.7.3';
 
   String? token;
 
@@ -51,7 +52,8 @@ class LinkRunner {
         'device_data': deviceData,
         'platform': 'FLUTTER',
         'link': link,
-        'source': source
+        'source': source,
+        'install_instance_id': await getLinkRunnerInstallInstanceId(),
       };
 
       var response = await http.post(
@@ -148,6 +150,7 @@ class LinkRunner {
         'device_data': await _getDeviceData(),
         ...?data,
       },
+      'install_instance_id': await getLinkRunnerInstallInstanceId(),
     });
 
     try {
@@ -193,6 +196,7 @@ class LinkRunner {
             final body = jsonEncode({
               'token': token,
               'device_data': await _getDeviceData(),
+              'install_instance_id': await getLinkRunnerInstallInstanceId(),
             });
 
             try {
@@ -256,7 +260,8 @@ class LinkRunner {
         },
         'payment_id': capturePayment.paymentId,
         'user_id': capturePayment.userId,
-        'amount': capturePayment.amount
+        'amount': capturePayment.amount,
+        'install_instance_id': await getLinkRunnerInstallInstanceId(),
       });
 
       var response =
@@ -309,6 +314,7 @@ class LinkRunner {
         },
         'payment_id': removePayment.paymentId,
         'user_id': removePayment.userId,
+        'install_instance_id': await getLinkRunnerInstallInstanceId(),
       });
 
       var response =
