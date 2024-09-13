@@ -22,7 +22,7 @@ Add `linkrunner` to your `pubspec.yaml` under dependencies:
 
 ```yaml
 dependencies:
-    linkrunner: ^0.7.5
+    linkrunner: ^0.7.6
 ```
 
 Then run:
@@ -175,39 +175,6 @@ void removeCapturedPayment() async {
 ```
 
 NOTE: `userId` or `paymentId` is required in order to remove a payment entry, if you use userId all the payments attributed to that user will be removed
-
-### Additional setup for Google Ads
-
-This setup is only needed if you are planning on running app ads via Google Ads and want to tracking them
-
-#### Step 1
-
-Make sure you have setup [firebase_core](https://pub.dev/packages/firebase_core) and [firebase_analytics](https://pub.dev/packages/firebase_analytics) correctly in your flutter project
-
-#### Step 2
-
-Update your `AndroidManifest.xml` file
-
-```
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.myawesome.app">
-
-    <uses-permission android:name="android.permission.INTERNET" />
-
-    <application
-     android:name=".MainActivity">
-
-     <!-- Add the below line -->
-     <meta-data android:name="google_analytics_deferred_deep_link_enabled" android:value="true"/>
-
-       <activity
-            android:name=".MainActivity" >
-       </activity>
-
-    </application>
-
-</manifest>
-```
 
 ### Facing issues during integration?
 
