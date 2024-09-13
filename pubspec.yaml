@@ -1,6 +1,6 @@
 name: linkrunner
 description: "Flutter Package for linkrunner, track every click, download and dropoff for your app links"
-version: 0.7.4
+version: 0.7.5
 homepage: "https://www.linkrunner.io/"
 repository: "https://github.com/RathodDarshil/linkrunner_flutter"
 documentation: "https://github.com/RathodDarshil/linkrunner_flutter#getting-started"
@@ -25,7 +25,6 @@ dependencies:
     connectivity_plus: ^6.0.3
     app_links: ^6.1.4
     android_play_install_referrer: ^0.4.0
-    google_ads_deferred_deep_link: ^1.0.0
     shared_preferences: ^2.0.11
 
 dev_dependencies:
