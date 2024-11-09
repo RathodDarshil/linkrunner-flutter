@@ -18,7 +18,7 @@ class LinkRunner {
   static final LinkRunner _singleton = LinkRunner._internal();
 
   final String _baseUrl = 'https://api.linkrunner.io';
-  final String packageVersion = '0.7.6';
+  final String packageVersion = '0.7.8';
 
   String? token;
 
