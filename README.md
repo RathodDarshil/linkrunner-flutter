@@ -22,7 +22,7 @@ Add `linkrunner` to your `pubspec.yaml` under dependencies:
 
 ```yaml
 dependencies:
-    linkrunner: ^0.7.8
+    linkrunner: ^0.7.9
 ```
 
 Then run:
@@ -84,6 +84,15 @@ void main() async {
   };
   deeplink: string;
   root_domain: boolean;
+  campaign_data: {
+    id: string;
+    name: string;
+    type: "ORGANIC" | "INORGANIC";
+    ad_network: "META" | "GOOGLE" | null;
+    group_name: string | null;
+    asset_group_name: string | null;
+    asset_name: string | null;
+  };
 }
 ```
 
