@@ -26,6 +26,7 @@ dependencies:
     app_links: ^6.1.4
     android_play_install_referrer: ^0.4.0
     shared_preferences: ^2.0.11
+    advertising_id: ^2.7.1
 
 dev_dependencies:
     flutter_test:
@@ -36,7 +37,7 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
-flutter:
+# flutter:
 # To add assets to your package, add an assets section, like this:
 # assets:
 #   - images/a_dot_burr.jpeg

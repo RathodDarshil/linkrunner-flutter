@@ -44,6 +44,14 @@ dependencies {
 }
 ```
 
+### Step 3: IOS updates
+
+Add the following in `info.plist`:
+```plist
+<key>NSUserTrackingUsageDescription</key>
+<string>This identifier will be used to deliver personalized ads to you.</string>
+```
+
 ## Usage
 
 ### Initialisation
